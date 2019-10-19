@@ -29,11 +29,6 @@ public class DocumentServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println("request headers");
-        request.getHeaderNames().asIterator().forEachRemaining(s -> System.out.println(s + " " + request.getHeader(s)));
-        System.out.println("response headers");
-        response.getHeaderNames().forEach(s -> System.out.println(s + " " + request.getHeader(s)));
-
         byte[] documentBytes = inputStreamReader.readDocumentBytes(request.getInputStream());
         String contentType = request.getContentType();
         Document document = new Document(contentType, documentBytes);
@@ -81,5 +76,4 @@ public class DocumentServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
-
 }

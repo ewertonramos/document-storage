@@ -1,14 +1,15 @@
-package com.ewerton;
+package com.ewerton.persistence;
+
+import com.ewerton.model.Document;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-public class DocumentRepository {
+public class DocumentRepository implements Repository {
 
-    Map<String, Document> repository = new HashMap<>();
-
+    private Map<String, Document> repository = new HashMap<>();
 
     public Document create(Document document) {
         document.setDocId(UUID.randomUUID().toString());
@@ -16,12 +17,12 @@ public class DocumentRepository {
         return document;
     }
 
-    public Optional<Document> findByDocId(String docId) {
+    public Optional<Document> findBy(String docId) {
         return Optional.ofNullable(repository.get(docId));
     }
 
     public void update(String docId, Document document) {
-        Optional<Document> documentById = findByDocId(docId);
+        Optional<Document> documentById = findBy(docId);
         if (documentById.isPresent()) {
             Document documentUpdate = documentById.get();
             documentUpdate.setDocumentType(document.getDocumentType());
@@ -37,8 +38,8 @@ public class DocumentRepository {
     }
 
     public void print() {
-        System.out.println("----");
+        System.out.println("++++++++++++++++++++++++++++++");
         repository.forEach((k, v) -> System.out.println(v));
-        System.out.println("****");
+        System.out.println("++++++++++++++++++++++++++++++");
     }
 }

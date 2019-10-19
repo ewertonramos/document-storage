@@ -1,32 +1,32 @@
-package com.ewerton;
+package com.ewerton.model;
 
 public class Document {
 
-    private String docId;
-    private DocumentType documentType;
+    private java.lang.String docId;
+    private String documentType;
     private byte[] content;
 
     public Document() {
     }
 
-    public Document(DocumentType documentType, byte[] content) {
+    public Document(String documentType, byte[] content) {
         this.documentType = documentType;
         this.content = content;
     }
 
-    public String getDocId() {
+    public java.lang.String getDocId() {
         return docId;
     }
 
-    public void setDocId(String docId) {
+    public void setDocId(java.lang.String docId) {
         this.docId = docId;
     }
 
-    public DocumentType getDocumentType() {
+    public String getDocumentType() {
         return documentType;
     }
 
-    public void setDocumentType(DocumentType documentType) {
+    public void setDocumentType(String documentType) {
         this.documentType = documentType;
     }
 
@@ -39,7 +39,7 @@ public class Document {
     }
 
     @Override
-    public String toString() {
+    public java.lang.String toString() {
         return "Document{" +
                 "docId='" + docId + '\'' +
                 ", documentType=" + documentType +

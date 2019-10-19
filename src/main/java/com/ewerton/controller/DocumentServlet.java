@@ -104,7 +104,7 @@ public class DocumentServlet extends HttpServlet {
     }
 
     private boolean hasOneResourceId(String pathInfo) {
-        return pathInfo.split("/").length == 1;
+        return pathInfo.split("/").length == 2;
     }
 
     private void writeDocument(PrintWriter writer, Document document) throws IOException {

@@ -11,35 +11,39 @@ public class DocumentRepository implements Repository {
 
     private Map<String, Document> repository = new HashMap<>();
 
+    public DocumentRepository() {
+    }
+
     public Document create(Document document) {
-        document.setDocId(UUID.randomUUID().toString());
+        document.setDocId(generateId());
         repository.put(document.getDocId(), document);
         return document;
+    }
+
+    private String generateId() {
+        String replaceUuid = UUID.randomUUID().toString().replace("-", "");
+        return replaceUuid.substring(replaceUuid.length()-20).toUpperCase();
     }
 
     public Optional<Document> findBy(String docId) {
         return Optional.ofNullable(repository.get(docId));
     }
 
-    public void update(String docId, Document document) {
+    public boolean update(String docId, Document document) {
         Optional<Document> documentById = findBy(docId);
         if (documentById.isPresent()) {
             Document documentUpdate = documentById.get();
             documentUpdate.setDocumentType(document.getDocumentType());
             documentUpdate.setContent(document.getContent());
             repository.put(docId, documentUpdate);
+            return true;
         } else {
-            throw new IllegalStateException("Not present");
+            return false;
         }
     }
 
-    public void remove(String docId) {
-        repository.remove(docId);
+    public boolean remove(String docId) {
+        return repository.remove(docId)!= null;
     }
 
-    public void print() {
-        System.out.println("++++++++++++++++++++++++++++++");
-        repository.forEach((k, v) -> System.out.println(v));
-        System.out.println("++++++++++++++++++++++++++++++");
-    }
 }

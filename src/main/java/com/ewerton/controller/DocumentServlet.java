@@ -10,26 +10,31 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Optional;
 
 @WebServlet("/documents/*")
 public class DocumentServlet extends HttpServlet {
 
     private Repository repository;
-    private ServletReader servletReader;
+    private InputStreamReader inputStreamReader;
+    private OutputStreamWriter outputStreamWriter;
 
     @Override
     public void init() throws ServletException {
         super.init();
         repository = new DocumentRepository();
-        servletReader = new DocumentReader();
+        inputStreamReader = new DocumentReader();
+        outputStreamWriter = new DocumentWriter();
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println("request headers");
+        request.getHeaderNames().asIterator().forEachRemaining(s -> System.out.println(s + " " + request.getHeader(s)));
+        System.out.println("response headers");
+        response.getHeaderNames().forEach(s -> System.out.println(s + " " + request.getHeader(s)));
 
-        byte[] documentBytes = servletReader.readDocumentBytes(request.getInputStream());
+        byte[] documentBytes = inputStreamReader.readDocumentBytes(request.getInputStream());
         String contentType = request.getContentType();
         Document document = new Document(contentType, documentBytes);
 
@@ -43,71 +48,38 @@ public class DocumentServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (hasOneResourceId(request.getPathInfo())) {
-            String docId = request.getPathInfo().substring(1);
-
-            String responseContentType;
-            Optional<Document> document = repository.findBy(docId);
-            if (document.isPresent()) {
-                responseContentType = document.get().getDocumentType();
-                writeDocument(response.getWriter(), document.get());
-            } else {
-                throw new IllegalStateException("sl");
-            }
-
-            response.setContentType(responseContentType);
+        String docId = PathHandler.getResourceId(request.getPathInfo()).orElse(null);
+        Optional<Document> document = repository.findBy(docId);
+        if (document.isPresent()) {
+            outputStreamWriter.writeOutput(response.getOutputStream(), document.get().getContent());
+            response.setContentType(document.get().getDocumentType());
             response.setStatus(HttpServletResponse.SC_OK);
         } else {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (hasOneResourceId(request.getPathInfo())) {
-            String docId = request.getPathInfo().substring(1);
-
-            byte[] documentBytes = servletReader.readDocumentBytes(request.getInputStream());
-            String documentType = request.getContentType();
-            Document document = new Document(documentType, documentBytes);
-
-            repository.update(docId, document);
-
+        String docId = PathHandler.getResourceId(request.getPathInfo()).orElse(null);
+        byte[] documentBytes = inputStreamReader.readDocumentBytes(request.getInputStream());
+        String documentType = request.getContentType();
+        Document document = new Document(documentType, documentBytes);
+        if (repository.update(docId, document)) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         } else {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (hasOneResourceId(request.getPathInfo())) {
-            String docId = request.getPathInfo().substring(1);
-
-            repository.remove(docId);
-
+        String docId = PathHandler.getResourceId(request.getPathInfo()).orElse(null);
+        if (repository.remove(docId)) {
             response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         } else {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 
-    @Override
-    protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        super.service(request, response);
-        System.out.println("===============================");
-        System.out.println(request.getPathInfo());
-        System.out.println(request.getContextPath());
-        request.getHeaderNames().asIterator().forEachRemaining(s -> System.out.println(s + " " + request.getHeader(s)));
-        repository.print();
-        System.out.println("===============================");
-    }
-
-    private boolean hasOneResourceId(String pathInfo) {
-        return pathInfo.split("/").length == 2;
-    }
-
-    private void writeDocument(PrintWriter writer, Document document) throws IOException {
-        writer.println(new String(document.getContent()));
-    }
 }

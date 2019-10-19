@@ -10,9 +10,8 @@ public interface Repository {
 
     Optional<Document> findBy(String docId);
 
-    void update(String docId, Document document);
+    boolean update(String docId, Document document);
 
-    void remove(String docId);
+    boolean remove(String docId);
 
-    void print();
 }

@@ -10,7 +10,7 @@
   <packaging>war</packaging>
 
   <name>Document Storage REST Web Service</name>
-  <url>http://localhost:8080/</url>
+  <url>http://localhost:8080/storage</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

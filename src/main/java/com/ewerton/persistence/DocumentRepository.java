@@ -7,9 +7,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+@org.springframework.stereotype.Repository
 public class DocumentRepository implements Repository {
 
-    private Map<String, Document> repository = new HashMap<>();
+    private final Map<String, Document> repository = new HashMap<>();
 
     public DocumentRepository() {
     }

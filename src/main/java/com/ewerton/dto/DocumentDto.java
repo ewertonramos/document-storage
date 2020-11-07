@@ -1,18 +1,10 @@
-package com.ewerton.model;
+package com.ewerton.dto;
 
-public class Document {
+public class DocumentDto {
 
     private String docId;
     private String documentType;
     private byte[] content;
-
-    public Document() {
-    }
-
-    public Document(String documentType, byte[] content) {
-        this.documentType = documentType;
-        this.content = content;
-    }
 
     public String getDocId() {
         return docId;
@@ -38,11 +30,4 @@ public class Document {
         this.content = content;
     }
 
-    @Override
-    public String toString() {
-        return "Document{" +
-                "docId='" + docId + '\'' +
-                ", documentType=" + documentType +
-                '}';
-    }
 }
